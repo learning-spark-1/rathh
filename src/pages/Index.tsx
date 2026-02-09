@@ -1,7 +1,7 @@
 import { useState, useRef, useMemo } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import Navbar from "@/components/Navbar";
-import HeroSection from "@/components/HeroSection";
+import HeroCarousel from "@/components/HeroCarousel";
 import EventFilters from "@/components/EventFilters";
 import EventCard from "@/components/EventCard";
 import BookingModal from "@/components/BookingModal";
@@ -16,10 +16,6 @@ const Index = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
 
   const eventsRef = useRef<HTMLDivElement>(null);
-
-  const handleExploreClick = () => {
-    eventsRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
 
   const handleTagToggle = (tagId: string) => {
     setSelectedTags(prev => 
@@ -62,12 +58,12 @@ const Index = () => {
   }, [selectedCity, selectedTags, searchQuery]);
 
   return (
-    <div className="min-h-screen bg-background bg-pattern-mandala">
+    <div className="min-h-screen bg-background">
       <Toaster position="top-center" />
       <Navbar />
       
-      {/* Hero Section */}
-      <HeroSection onExploreClick={handleExploreClick} />
+      {/* Hero Carousel with Search */}
+      <HeroCarousel />
 
       {/* Events Section */}
       <section 
