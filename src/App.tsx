@@ -8,6 +8,7 @@ import { SearchProvider } from "@/contexts/SearchContext";
 import Index from "./pages/Index";
 import SearchDestination from "./pages/SearchDestination";
 import SelectedTripDetails from "./pages/SelectedTripDetails";
+import CheckoutPage from "./pages/CheckoutPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/search-destination" element={<SearchDestination />} />
               <Route path="/selected-trip-details" element={<SelectedTripDetails />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
