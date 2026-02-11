@@ -28,6 +28,22 @@ export interface TourData {
 const TRIP_HISTORY_KEY = "TRIP_HISTORY_CACHE";
 const STORAGE_LIMIT = 100;
 const CLEANUP_AMOUNT = 70;
+const saveTripToHistory = (trip: TourData) => {
+  try {
+    const raw = localStorage.getItem(TRIP_HISTORY_KEY);
+    const history: TourData[] = raw ? JSON.parse(raw) : [];
+    history.push(trip);
+
+    if (history.length > STORAGE_LIMIT) {
+      const kept = history.slice(history.length - (STORAGE_LIMIT - CLEANUP_AMOUNT));
+      localStorage.setItem(TRIP_HISTORY_KEY, JSON.stringify(kept));
+    } else {
+      localStorage.setItem(TRIP_HISTORY_KEY, JSON.stringify(history));
+    }
+  } catch (e) {
+    console.warn("Failed to update trip history cache:", e);
+  }
+};
 
 const handleViewDetails = (trip: TourData) => {
   try {
@@ -126,10 +142,20 @@ const TourCard = ({ tour }: TourCardProps) => {
           <span className="text-xl font-bold text-foreground">
             ${tour.price.toLocaleString()}
           </span>
-          <Button size="sm" className="gap-1" onClick={() => handleViewDetails(tour)}>
+          {/* Using standard HTML anchor tag */}
+          <Button size="sm" className="gap-1" asChild>
+            <a 
+              href={`/selected-trip-details?tripId=${tour.id}`} 
+              onClick={() => saveTripToHistory(tour)}
+            >
+              <ExternalLink className="w-4 h-4" />
+              View Details
+            </a>
+          </Button>
+          {/* <Button size="sm" className="gap-1" onClick={() => handleViewDetails(tour)}>
             <ExternalLink className="w-4 h-4" />
             View Details
-          </Button>
+          </Button> */}
         </div>
       </CardContent>
     </Card>
