@@ -16,6 +16,7 @@ const GuidesPage = () => (
     pageSubtitle="Expert advice and insider tips to make every trip smoother."
     searchPlaceholder="Search guides..."
     items={items}
+    detailMode="modal"
   />
 );
 

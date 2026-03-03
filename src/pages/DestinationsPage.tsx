@@ -16,6 +16,7 @@ const DestinationsPage = () => (
     pageSubtitle="Discover breathtaking places around the world handpicked for unforgettable experiences."
     searchPlaceholder="Search destinations..."
     items={items}
+    detailMode="navigate"
   />
 );
 

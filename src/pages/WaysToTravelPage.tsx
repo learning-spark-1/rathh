@@ -16,6 +16,7 @@ const WaysToTravelPage = () => (
     pageSubtitle="Choose your perfect mode of transport for every kind of adventure."
     searchPlaceholder="Search travel modes..."
     items={items}
+    detailMode="modal"
   />
 );
 

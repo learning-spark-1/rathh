@@ -15,6 +15,7 @@ const DealsPage = () => (
     pageSubtitle="Limited-time travel packages at unbeatable prices. Book before they're gone!"
     searchPlaceholder="Search deals..."
     items={items}
+    detailMode="modal"
   />
 );
 

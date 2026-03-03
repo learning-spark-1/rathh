@@ -1,9 +1,14 @@
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -19,22 +24,50 @@ export interface ListingItem {
   link?: string;
 }
 
+type DetailMode = "navigate" | "modal";
+
 interface ListingPageTemplateProps {
   pageTitle: string;
   pageSubtitle: string;
   searchPlaceholder: string;
   items: ListingItem[];
+  detailMode?: DetailMode;
   renderCardExtras?: (item: ListingItem) => React.ReactNode;
 }
+
+const TRIP_HISTORY_KEY = "TRIP_HISTORY_CACHE";
+
+const handleNavigateToTrip = (item: ListingItem) => {
+  try {
+    const raw = localStorage.getItem(TRIP_HISTORY_KEY);
+    const history = raw ? JSON.parse(raw) : [];
+    history.push({
+      id: item.id,
+      name: item.title,
+      description: item.description,
+      pic: item.image,
+    });
+    if (history.length > 100) {
+      localStorage.setItem(TRIP_HISTORY_KEY, JSON.stringify(history.slice(-30)));
+    } else {
+      localStorage.setItem(TRIP_HISTORY_KEY, JSON.stringify(history));
+    }
+  } catch (e) {
+    console.warn("Failed to update trip history cache:", e);
+  }
+  window.open(`/selected-trip-details?tripId=${item.id}`, "_blank");
+};
 
 const ListingPageTemplate = ({
   pageTitle,
   pageSubtitle,
   searchPlaceholder,
   items,
+  detailMode = "navigate",
   renderCardExtras,
 }: ListingPageTemplateProps) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedItem, setSelectedItem] = useState<ListingItem | null>(null);
 
   const filtered = useMemo(
     () =>
@@ -45,6 +78,14 @@ const ListingPageTemplate = ({
       ),
     [items, searchQuery]
   );
+
+  const handleViewDetails = (item: ListingItem) => {
+    if (detailMode === "navigate") {
+      handleNavigateToTrip(item);
+    } else {
+      setSelectedItem(item);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -124,14 +165,13 @@ const ListingPageTemplate = ({
                         </div>
                       )}
                       {renderCardExtras?.(item)}
-                      <Link
-                        to={item.link || "#"}
-                        className="inline-block mt-2"
+                      <Button
+                        size="sm"
+                        className="mt-2 bg-primary text-primary-foreground hover:bg-primary/90"
+                        onClick={() => handleViewDetails(item)}
                       >
-                        <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                          View Details
-                        </Button>
-                      </Link>
+                        View Details
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -146,6 +186,55 @@ const ListingPageTemplate = ({
           </div>
         </section>
       </div>
+
+      {/* Detail Modal for modal-mode pages */}
+      <Dialog open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
+        <DialogContent className="sm:max-w-lg">
+          {selectedItem && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="font-serif text-xl">{selectedItem.title}</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="aspect-video overflow-hidden rounded-lg">
+                  <img
+                    src={selectedItem.image}
+                    alt={selectedItem.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <p className="text-sm text-muted-foreground">{selectedItem.description}</p>
+                {selectedItem.badges && selectedItem.badges.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedItem.badges.map((b, i) => (
+                      <Badge key={i} variant={b.variant || "default"} className="text-xs">
+                        {b.label}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+                {selectedItem.meta && (
+                  <div className="space-y-2">
+                    {selectedItem.meta.map((m, i) => (
+                      <div key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                        {m.icon}
+                        <span>{m.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {selectedItem.priceOld && selectedItem.priceNew && (
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm line-through text-muted-foreground">{selectedItem.priceOld}</span>
+                    <span className="text-lg font-bold text-primary">{selectedItem.priceNew}</span>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <Footer />
     </div>
   );

@@ -16,6 +16,7 @@ const ToursPage = () => (
     pageSubtitle="Expert-led group tours designed for authentic, immersive travel."
     searchPlaceholder="Search tours..."
     items={items}
+    detailMode="navigate"
   />
 );
 
