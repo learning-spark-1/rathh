@@ -16,6 +16,7 @@ const ActivitiesPage = () => (
     pageSubtitle="Thrilling adventures and enriching experiences for every traveler."
     searchPlaceholder="Search activities..."
     items={items}
+    detailMode="navigate"
   />
 );
 
