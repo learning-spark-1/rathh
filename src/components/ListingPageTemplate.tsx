@@ -55,7 +55,7 @@ const handleNavigateToTrip = (item: ListingItem) => {
   } catch (e) {
     console.warn("Failed to update trip history cache:", e);
   }
-  window.open(`/selected-trip-details?tripId=${item.id}`, "_blank");
+  window.location.href = `/selected-trip-details?tripId=${item.id}`;
 };
 
 const ListingPageTemplate = ({
